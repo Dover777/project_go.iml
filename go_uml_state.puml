@@ -1,0 +1,21 @@
+@startuml
+[*] --> OczekiwanieNaGraczy
+
+state OczekiwanieNaGraczy {
+  [*] --> BrakGraczy : Serwer\n uruchiomiony
+  BrakGraczy --> JedenGracz : Gracz 1 łączy się
+  JedenGracz --> GraWToku : Gracz 2 łączy się
+}
+
+state GraWToku {
+  [*] --> TuraCzarnego
+
+  TuraCzarnego --> TuraBialego : Poprawny ruch Czarnego
+  TuraBialego --> TuraCzarnego : Poprawny ruch Białego
+  TuraCzarnego --> TuraCzarnego : Błędny ruch / Nie Twoja kolej\n(Komunikat o błędzie)
+  TuraBialego --> TuraBialego : Błędny ruch / Nie Twoja kolej\n(Komunikat o błędzie)
+}
+
+GraWToku --> [*] : Wyłączenie Serwer
+
+@enduml
