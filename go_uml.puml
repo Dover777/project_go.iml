@@ -1,0 +1,85 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+package "go.game" {
+    enum StoneColour {
+        BLACK
+        WHITE
+        EMPTY
+    }
+
+    record Point {
+        int x
+        int y
+    }
+
+    record Move {
+        int x
+        int y
+        StoneColour colour
+    }
+
+    record PlacementResult {
+        boolean success
+        int capturedCount
+        String message
+        {static} success(int)
+        {static} failure(String)
+    }
+
+    class Board {
+        - {static} int size = 9
+        - StoneColour[][] grid
+        + String toCompactString()
+        + String toDebugString()
+        + void fromCompactString(String)
+        + StoneColour getColourAt(int, int)
+    }
+
+    class Logic {
+        - Board board
+        + PlacementResult placeStone(Move)
+        - Set<Point> findGroup(int, int)
+        - int countLiberties(Set<Point>)
+        - int removeGroup(Set<Point>)
+    }
+}
+
+package "go.connection" {
+    class GoServer {
+        + {static} main(String[])
+    }
+
+    class MultiThread {
+        - {static} Board GAME_BOARD
+        - {static} Logic GAME_LOGIC
+        - {static} StoneColour currentPlayer
+        - Socket socket
+        - PrintWriter out
+        - StoneColour playerColour
+        + run()
+        - void handleMove(String)
+        - void broadcastMove(int)
+    }
+
+    class GoClient {
+        + {static} main(String[])
+        - {static} void displayBoard(Board, String, StoneColour)
+        - {static} void processServerResponse(String, Board, StoneColour)
+    }
+}
+
+' Relacje
+MultiThread --|> Thread
+MultiThread o-- Board : "zarządza"
+MultiThread o-- Logic : "używa"
+Logic o-- Board : "operuje na"
+GoServer ..> MultiThread : "tworzy"
+GoClient ..> Board
+
+Move o-- StoneColour
+Board o-- StoneColour
+Logic ..> Point : "używa"
+Logic ..> PlacementResult : "zwraca"
+
+@enduml
