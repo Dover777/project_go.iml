@@ -79,7 +79,7 @@ public class MultiThread extends Thread {
             }
 
         } catch (Exception e) {
-            out.println("Błąd Nie prawidłowe współrzędne.");
+            out.println("Błąd Nieprawidłowe współrzędne.");
         }
     }
 
