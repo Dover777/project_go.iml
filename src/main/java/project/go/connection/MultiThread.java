@@ -86,13 +86,6 @@ public class MultiThread extends Thread {
 
             PlacementResult result = GAME_LOGIC.placeStone(new Move(x, y, playerColour));
             if (result.success()) {
-                if (playerColour == StoneColour.BLACK) {
-                    blackPrisoners += result.capturedCount();
-                }
-                else {
-                    whitePrisoners += result.capturedCount();
-                }
-
                 currentPlayer = (playerColour == StoneColour.BLACK) ? StoneColour.WHITE : StoneColour.BLACK;
                 broadcastMove(result.capturedCount());
             }
