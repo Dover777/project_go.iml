@@ -18,7 +18,9 @@ public class Board {
     }
 
     public StoneColour getColourAt(int x, int y) {
-        if (!isValid(x, y)) return StoneColour.EMPTY;
+        if (!isValid(x, y)){
+            return StoneColour.EMPTY;
+        }
         return grid[x][y];
     }
 
@@ -27,7 +29,6 @@ public class Board {
             grid[x][y] = colour;
         }
     }
-
 
     private char getSymbol(int x, int y) {
         return switch (grid[x][y]) {
@@ -62,14 +63,18 @@ public class Board {
                 sb.append(getSymbol(x, y)).append(',');
             }
         }
-        if (!sb.isEmpty()) sb.setLength(sb.length() - 1);
+        if (!sb.isEmpty()) {
+            sb.setLength(sb.length() - 1);
+        }
         return sb.toString();
     }
 
     public String toDebugString() {
         StringBuilder sb = new StringBuilder();
         sb.append("   ");
-        for (int y = 0; y < SIZE; y++) sb.append(y + 1).append(" ");
+        for (int y = 0; y < SIZE; y++) {
+            sb.append(y + 1).append(" ");
+        }
         sb.append("\n");
 
         for (int x = 0; x < SIZE; x++) {
