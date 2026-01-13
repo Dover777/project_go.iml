@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MultiThread extends Thread {
-
     private static final Board GAME_BOARD;
     private static final Logic GAME_LOGIC;
 
@@ -59,6 +58,22 @@ public class MultiThread extends Thread {
             return;
         }
 
+        if (clientInput.equalsIgnoreCase("pass")) {
+            boolean gameOver = GAME_LOGIC.pass();
+            currentPlayer = (playerColour == StoneColour.BLACK) ? StoneColour.WHITE : StoneColour.BLACK;
+
+            if (gameOver) {
+                broadcastGameOver();
+            }
+            else {
+                broadcastMove(-1);
+            }
+            return;
+        } else if (clientInput.equalsIgnoreCase("ff")) {
+            broadcastSurrender();
+            return;
+        }
+
         try {
             String[] coords = clientInput.substring(5).trim().split(",");
             int x = Integer.parseInt(coords[0].trim()) - 1;
@@ -71,6 +86,13 @@ public class MultiThread extends Thread {
 
             PlacementResult result = GAME_LOGIC.placeStone(new Move(x, y, playerColour));
             if (result.success()) {
+                if (playerColour == StoneColour.BLACK) {
+                    blackPrisoners += result.capturedCount();
+                }
+                else {
+                    whitePrisoners += result.capturedCount();
+                }
+
                 currentPlayer = (playerColour == StoneColour.BLACK) ? StoneColour.WHITE : StoneColour.BLACK;
                 broadcastMove(result.capturedCount());
             }
@@ -81,6 +103,49 @@ public class MultiThread extends Thread {
         } catch (Exception e) {
             out.println("Błąd Nieprawidłowe współrzędne.");
         }
+    }
+
+    private void broadcastGameOver() {
+        GameScore score = GAME_LOGIC.setTerritory();
+
+        System.out.println("\nUkończono Mecz");
+        System.out.println("Punkty Czarnego: " + score.getTotalBlackScore());
+        System.out.println("Punkty Białego: " + score.getTotalWhiteScore());
+
+        synchronized (CLIENT_THREADS) {
+            for (MultiThread client : CLIENT_THREADS) {
+                client.out.println("Ukończono Mecz " + score.getTotalBlackScore() + " " + score.getTotalWhiteScore());
+                client.out.println("Status Koniec");
+            }
+        }
+
+        System.out.println("Inicjowanie wyłączania serwera...");
+        serverOff();
+    }
+
+    private void broadcastSurrender() {
+        StoneColour colourWinner = (playerColour == StoneColour.BLACK) ? StoneColour.WHITE : StoneColour.BLACK;
+        System.out.println("Gracz " + playerColour + " poddał partię. Wygrywa " + colourWinner);
+
+        synchronized (CLIENT_THREADS) {
+            for (MultiThread client : CLIENT_THREADS) {
+                client.out.println("Poddanie " + playerColour + " " + colourWinner);
+                client.out.flush();
+                client.out.println("Status Koniec");
+            }
+        }
+
+        System.out.println("Inicjowanie wyłączania serwera...");
+        serverOff();
+    }
+
+    private void serverOff(){
+        new Thread(() -> {
+            try {
+                Thread.sleep(2000);
+                System.exit(0);
+            } catch (InterruptedException ignored) {}
+        }).start();
     }
 
     @Override

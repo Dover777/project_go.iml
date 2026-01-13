@@ -5,6 +5,10 @@ import java.util.*;
 public class Logic {
     private final Board board;
     private String lastBoardState = "";
+    private int passCount = 0;
+
+    private int blackPrisoners = 0;
+    private int whitePrisoners = 0;
 
     public Logic(Board board) {
         this.board = board;
@@ -33,7 +37,15 @@ public class Logic {
                 Set<Point> group = findGroup(neighbour.x(), neighbour.y());
 
                 if (countBreaths(group) == 0) {
-                    capturedCount += removeGroup(group);
+                    int prisonersCount = removeGroup(group);
+                    capturedCount += prisonersCount;
+
+                    if (colour == StoneColour.BLACK) {
+                        blackPrisoners += prisonersCount;
+                    }
+                    else {
+                        whitePrisoners += prisonersCount;
+                    }
                 }
             }
         }
@@ -53,6 +65,7 @@ public class Logic {
         }
 
         lastBoardState = boardStateBefore;
+        resetPassCount();
         return PlacementResult.success(capturedCount);
     }
 
@@ -99,4 +112,70 @@ public class Logic {
         }
         return count;
     }
+
+    public GameScore setTerritory() {
+        int blackTerritory = 0;
+        int whiteTerritory = 0;
+        int size = board.getSize();
+        boolean [][]visited = new boolean[size][size];
+
+        for (int x = 0; x < size; x++) {
+            for (int y = 0; y < size; y++) {
+                if (board.getColourAt(x, y) == StoneColour.EMPTY && !visited[x][y]) {
+                    List<Point> area = new ArrayList<>();
+                    StoneColour owner = findAreaOwner(x, y, visited, area);
+
+                    if (owner == StoneColour.BLACK) {
+                        blackTerritory += area.size();
+                    }
+                    else if (owner == StoneColour.WHITE) {
+                        whiteTerritory += area.size();
+                    }
+                }
+            }
+        }
+
+        return new GameScore(blackTerritory, whiteTerritory, blackPrisoners, whitePrisoners);
+    }
+
+    private StoneColour findAreaOwner(int startX, int startY, boolean[][] visited, List<Point> area) {
+        Queue<Point> queue = new LinkedList<>();
+        Point start = new Point(startX, startY);
+        queue.add(start);
+        visited[startX][startY] = true;
+        area.add(start);
+
+        Set<StoneColour> borders = new HashSet<>();
+        while (!queue.isEmpty()) {
+            Point current = queue.poll();
+            for (Point  neighbour : board.getNeighbours(current.x(), current.y())) {
+                StoneColour colour = board.getColourAt(neighbour.x(), neighbour.y());
+                if (colour == StoneColour.EMPTY) {
+                    if (!visited[neighbour.x()][neighbour.y()]) {
+                        visited[neighbour.x()][neighbour.y()] = true;
+                        area.add(neighbour);
+                        queue.add(neighbour);
+                    }
+                }
+                else {
+                    borders.add(colour);
+                }
+            }
+        }
+
+        if (borders.size() == 1) {
+            return borders.iterator().next();
+        }
+        return StoneColour.EMPTY;
+    }
+
+    public boolean pass() {
+        passCount++;
+        return passCount >= 2;
+    }
+
+    private void resetPassCount(){
+        passCount = 0;
+    }
+
 }

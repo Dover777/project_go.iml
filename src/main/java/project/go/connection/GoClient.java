@@ -21,7 +21,10 @@
                 int captured = Integer.parseInt(parts[1]);
                 String newBoardState = parts[2];
 
-                if (captured == 1) {
+                if (captured == -1){
+                    System.out.println("Sukces! Ruch spasowany.");
+                }
+                else if (captured == 1) {
                     System.out.println("Sukces! Zdobyłeś " + captured + " kamień.");
                 }
                 else if (captured > 2 && captured < 5){
@@ -37,10 +40,41 @@
 
             }
             else if (response.startsWith("Błąd")) {
-                System.err.println("Ruch Błąd: " + response.substring(5));
+                System.err.println("Błąd: " + response.substring(5));
             }
             else if (response.startsWith("Koniec")) {
                 System.out.println("Serwer zakończył połączenie.");
+            }
+            else if (response.startsWith("Ukończono Mecz")) {
+                String[] score = response.split(" ");
+                if (score.length >= 4) {
+                    String blackPoints = score[2];
+                    String whitePoints = score[3];
+
+                    System.out.println("\nUkończono Mecz");
+                    System.out.println("Punkty Czarnego: " + blackPoints);
+                    System.out.println("Punkty Białego: " + whitePoints);
+
+                    int bPoints = Integer.parseInt(blackPoints);
+                    int wPoints = Integer.parseInt(whitePoints);
+                    if (bPoints > wPoints) {
+                        System.out.println("Wygrał Czarny.");
+                    }
+                    else if (bPoints < wPoints) {
+                        System.out.println("Wygrał Biały.");
+                    }
+                    else {
+                        System.out.print("Remis.\n");
+                    }
+                }
+            }
+            else if (response.startsWith("Poddanie ")){
+                String[] score = response.split(" ");
+                if (score.length >= 3) {
+                    String loser = score[1];
+                    String winner = score[2];
+                    System.out.println("\n" + loser + " poddał partię. " + winner + " wygrał.");
+                }
             }
             else if (response.contains(",") && response.length() > 5) {
                 displayBoard(board, response.split(" ")[0], myColour);
@@ -78,20 +112,34 @@
                     serverResponse = in.readLine();
                     if (serverResponse == null) break;
 
+                    processServerResponse(serverResponse, clientBoard, myColour);
+                    if (serverResponse.startsWith("Status Koniec") ||
+                            serverResponse.startsWith("Ukończono Mecz") ||
+                            serverResponse.startsWith("Poddanie ")) {
+
+                        System.out.println("Aplikacja zostanie zamknięta.");
+                        break;
+                    }
+
                     if (serverResponse.startsWith("Status Twoja_Kolej")) {
                         System.out.println("\nTwoja kolej (" + myColour + ")");
-                        System.out.print("Wpisz ruch: x,y: ");
+                        System.out.print("Wpisz ruch: x,y lub 'pass' ewentualnie 'ff' aby się poddać: ");
                         clientInput = consoleReader.readLine();
                         if (clientInput == null) break;
 
-                        String commandToSend = "MOVE " + clientInput.trim();
-                        out.println(commandToSend);
+                        String trimmedInput = clientInput.trim();
+                        if (clientInput.equalsIgnoreCase("pass")) {
+                            out.println("pass");
+                        }
+                        else if (clientInput.equalsIgnoreCase("ff")) {
+                            out.println("ff");
+                        }
+                        else {
+                            out.println("Ruch " + trimmedInput);
+                        }
                     }
                     else if (serverResponse.startsWith("Status Czekaj")) {
                         System.out.println("Oczekiwanie na ruch przeciwnika...");
-                    }
-                    else {
-                        processServerResponse(serverResponse, clientBoard, myColour);
                     }
                 }
 

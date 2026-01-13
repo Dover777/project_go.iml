@@ -61,5 +61,23 @@ public class LogicTest {
         assertEquals(StoneColour.EMPTY, board.getColourAt(2,2));
     }
 
+    @Test
+    void passEndsGameTest() {
+        boolean firstPass = logic.pass();
+        assertFalse(firstPass);
+
+        boolean secondPass = logic.pass();
+        assertTrue(secondPass);
+    }
+
+    @Test
+    void moveResetsPassCountTest() {
+        logic.pass(); // Pierwszy pas
+        logic.placeStone(new Move(1, 1, StoneColour.BLACK));
+
+        boolean afterMove = logic.pass();
+        assertFalse(afterMove);
+    }
+
 }
 
