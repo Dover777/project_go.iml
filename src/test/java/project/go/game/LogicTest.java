@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class LogicTest {
+class LogicTest {
     private Board board;
     private Logic logic;
 
@@ -15,7 +15,7 @@ public class LogicTest {
     }
 
     @Test
-    void CaptureTest() {
+    void captureTest() {
         board.setStone(1, 2, StoneColour.BLACK);
         board.setStone(2, 1, StoneColour.BLACK);
         board.setStone(2, 3, StoneColour.BLACK);
@@ -29,7 +29,7 @@ public class LogicTest {
     }
 
     @Test
-    void SuicideRuleTest() {
+    void suicideRuleTest() {
         board.setStone(1, 2, StoneColour.BLACK);
         board.setStone(2, 1, StoneColour.BLACK);
         board.setStone(2, 3, StoneColour.BLACK);
@@ -43,7 +43,7 @@ public class LogicTest {
     }
 
     @Test
-    void KoRuleTest() {
+    void koRuleTest() {
         board.setStone(1, 2, StoneColour.BLACK);
         board.setStone(2, 1, StoneColour.BLACK);
         board.setStone(3, 2, StoneColour.BLACK);

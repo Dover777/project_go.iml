@@ -1,21 +1,60 @@
 @startuml
+skinparam state {
+  BackgroundColor White
+  BorderColor Black
+}
+
 [*] --> OczekiwanieNaGraczy
 
 state OczekiwanieNaGraczy {
-  [*] --> BrakGraczy : Serwer\n uruchiomiony
-  BrakGraczy --> JedenGracz : Gracz 1 łączy się
-  JedenGracz --> GraWToku : Gracz 2 łączy się
+  [*] --> BrakGraczy : Serwer uruchomiony
+  BrakGraczy --> JedenGracz : Gracz 1 (Black) łączy się
+  JedenGracz --> GraWToku : Gracz 2 (White) łączy się
 }
 
 state GraWToku {
   [*] --> TuraCzarnego
 
-  TuraCzarnego --> TuraBialego : Poprawny ruch Czarnego
-  TuraBialego --> TuraCzarnego : Poprawny ruch Białego
-  TuraCzarnego --> TuraCzarnego : Błędny ruch / Nie Twoja kolej\n(Komunikat o błędzie)
-  TuraBialego --> TuraBialego : Błędny ruch / Nie Twoja kolej\n(Komunikat o błędzie)
+  state TuraCzarnego {
+    TuraCzarnego : Czeka na ruch lub komendę
+  }
+
+  state TuraBialego {
+    TuraBialego : Czeka na ruch lub komendę
+  }
+
+  ' Przejścia tury
+  TuraCzarnego --> TuraBialego : placementResult.success() / pass()
+  TuraBialego --> TuraCzarnego : placementResult.success() / pass()
+
+  ' Obsługa błędów (pętla)
+  TuraCzarnego --> TuraCzarnego : Błąd (zajęte, KO, samobójstwo)
+  TuraBialego --> TuraBialego : Błąd (zajęte, KO, samobójstwo)
+
+  ' Warunki zakończenia wewnątrz gry
+  TuraCzarnego --> PodliczanieWynikow : pass() gdy passCount == 1
+  TuraBialego --> PodliczanieWynikow : pass() gdy passCount == 1
+  TuraCzarnego --> KoniecPrzezPoddanie : ff()
+  TuraBialego --> KoniecPrzezPoddanie : ff()
 }
 
-GraWToku --> [*] : Wyłączenie Serwer
+state PodliczanieWynikow {
+  PodliczanieWynikow : GAME_LOGIC.setTerritory()
+  PodliczanieWynikow : Wysłanie punktów do obu graczy
+}
+
+state KoniecPrzezPoddanie {
+  KoniecPrzezPoddanie : Ogłoszenie zwycięzcy przez walkower
+}
+
+PodliczanieWynikow --> WylaczanieSerwera
+KoniecPrzezPoddanie --> WylaczanieSerwera
+
+state WylaczanieSerwera {
+  WylaczanieSerwera : Thread.sleep(2000)
+  WylaczanieSerwera : System.exit(0)
+}
+
+WylaczanieSerwera --> [*]
 
 @enduml

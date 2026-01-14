@@ -1,0 +1,96 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+package "project.go.connection" {
+    class GoServer {
+        - {static} PORT : int
+        + isRunning : boolean
+        + main(String[])
+    }
+
+    class MultiThread {
+        - {static} GAME_BOARD : Board
+        - {static} GAME_LOGIC : Logic
+        - playerColour : StoneColour
+        - socket : Socket
+        - out : PrintWriter
+        + run()
+        - handleMove(String)
+        - broadcastMove(int)
+        - broadcastGameOver()
+    }
+
+    class GoClient {
+        + main(String[])
+        - {static} displayBoard(Board, String, StoneColour)
+        - {static} processServerResponse(String, Board, StoneColour)
+    }
+
+    class FXGoClient {
+        - clientBoard : Board
+        - myTurn : boolean
+        + start(Stage)
+        - processResponse(String)
+    }
+}
+
+package "project.go.game" {
+    class Board {
+        + {static} SIZE : int
+        - grid : StoneColour[][]
+        + toCompactString() : String
+        + fromCompactString(String)
+        + getNeighbours(int, int) : List<Point>
+    }
+
+    class Logic {
+        - board : Board
+        + placeStone(Move) : PlacementResult
+        + setTerritory() : GameScore
+    }
+
+    enum StoneColour {
+        EMPTY
+        BLACK
+        WHITE
+    }
+
+    class Point <<record>> {
+        + x : int
+        + y : int
+    }
+
+    class Move {
+        - point : Point
+        - colour : StoneColour
+    }
+
+    class PlacementResult <<record>> {
+        + success : boolean
+        + capturedCount : int
+        + message : String
+    }
+
+    class GameScore <<record>> {
+        + blackTerritory : int
+        + whiteTerritory : int
+        + blackPrisoners : int
+        + whitePrisoners : int
+    }
+}
+
+GoServer "1" *-- "many" MultiThread : tworzy
+MultiThread ..> Logic : korzysta
+MultiThread ..> Board : korzysta
+GoClient ..> Board : posiada/aktualizuje
+FXGoClient "1" *-- "1" Board : posiada
+
+Logic o-- Board
+Board ..> Point : używa w metodach
+Move *-- Point
+Move *-- StoneColour
+Logic ..> Move : przetwarza
+Logic ..> PlacementResult : zwraca wynik
+Logic ..> GameScore : oblicza wynik końcowy
+@enduml

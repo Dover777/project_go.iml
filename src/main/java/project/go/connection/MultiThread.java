@@ -6,6 +6,11 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Wątek obsługujący pojedyncze połączenie klienta na serwerze.
+ * Zarządza synchronizacją ruchów między graczami.
+ */
+
 public class MultiThread extends Thread {
     private static final Board GAME_BOARD;
     private static final Logic GAME_LOGIC;
@@ -34,6 +39,7 @@ public class MultiThread extends Thread {
         }
     }
 
+    /** Wysyła aktualny stan planszy oraz informację o turze do wszystkich połączonych graczy. */
     private void broadcastMove(int captured) {
         String boardState = GAME_BOARD.toCompactString();
 
@@ -54,7 +60,7 @@ public class MultiThread extends Thread {
 
     private synchronized void handleMove(String clientInput) {
         if (currentPlayer != playerColour) {
-            out.println("Błąd poczekaj na swoją turę.");
+            out.println("Błąd Poczekaj na swoją turę.");
             return;
         }
 
@@ -98,6 +104,8 @@ public class MultiThread extends Thread {
         }
     }
 
+
+    /** Odpowiada za prawidłowe zakończenie meczu. */
     private void broadcastGameOver() {
         GameScore score = GAME_LOGIC.setTerritory();
 
@@ -116,13 +124,14 @@ public class MultiThread extends Thread {
         serverOff();
     }
 
+    /** Odpowiada za wypisania informacji o poddaniu się. */
     private void broadcastSurrender() {
         StoneColour colourWinner = (playerColour == StoneColour.BLACK) ? StoneColour.WHITE : StoneColour.BLACK;
         System.out.println("Gracz " + playerColour + " poddał partię. Wygrywa " + colourWinner);
 
         synchronized (CLIENT_THREADS) {
             for (MultiThread client : CLIENT_THREADS) {
-                client.out.println("Poddanie " + playerColour + " " + colourWinner);
+                client.out.println("Poddanie " + playerColour + " Wygrał " + colourWinner);
                 client.out.flush();
                 client.out.println("Status Koniec");
             }
@@ -132,6 +141,7 @@ public class MultiThread extends Thread {
         serverOff();
     }
 
+    /** Wyłączenie serwera po zakończeniu meczu (obustronny pas lub poddanie się jednej ze stron) */
     private void serverOff(){
         new Thread(() -> {
             try {

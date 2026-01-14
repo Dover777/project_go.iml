@@ -2,6 +2,7 @@ package project.go.game;
 
 import java.util.*;
 
+/** Klasa Logic której cel jest wyliczanie prawidłowości ruchów zgodnie z zasadami. */
 public class Logic {
     private final Board board;
     private String lastBoardState = "";
@@ -14,6 +15,8 @@ public class Logic {
         this.board = board;
     }
 
+    /** Metoda służąca do postawienia kamienia na planszy
+     * Sprawdza kolejno: zajętość pola, bicie przeciwnika, samobójstwo oraz zasadę KO. */
     public PlacementResult placeStone(Move move) {
         int x = move.getX();
         int y = move.getY();
@@ -69,6 +72,7 @@ public class Logic {
         return PlacementResult.success(capturedCount);
     }
 
+    /** Szukanie łańcuchów */
     private Set<Point> findGroup(int x, int y) {
         if (this.board.getColourAt(x, y) == StoneColour.EMPTY) return Collections.emptySet();
 
@@ -92,6 +96,7 @@ public class Logic {
         return group;
     }
 
+    /**Liczenie oddechów */
     private int countBreaths(Set<Point> group) {
         Set<Point> breaths = new HashSet<>();
         for (Point stone : group) {
@@ -113,6 +118,7 @@ public class Logic {
         return count;
     }
 
+    /** Odpowiada za wyliczanie terytorium jednoznaczne z częścią punktacji w grze*/
     public GameScore setTerritory() {
         int blackTerritory = 0;
         int whiteTerritory = 0;

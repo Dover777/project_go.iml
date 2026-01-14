@@ -70,9 +70,9 @@
             }
             else if (response.startsWith("Poddanie ")){
                 String[] score = response.split(" ");
-                if (score.length >= 3) {
+                if (score.length >= 4) {
                     String loser = score[1];
-                    String winner = score[2];
+                    String winner = score[3];
                     System.out.println("\n" + loser + " poddał partię. " + winner + " wygrał.");
                 }
             }

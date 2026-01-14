@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"project.go.game","l":"Board"},{"p":"project.go.game","l":"GameScore"},{"p":"project.go.game","l":"Logic"},{"p":"project.go.game","l":"Move"},{"p":"project.go.game","l":"PlacementResult"},{"p":"project.go.game","l":"Point"},{"p":"project.go.game","l":"StoneColour"}];updateSearchResults();

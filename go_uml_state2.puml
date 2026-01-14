@@ -1,0 +1,49 @@
+@startuml
+skinparam state {
+  BackgroundColor White
+  BorderColor Black
+}
+
+[*] --> Rozłączony
+
+state Rozłączony {
+}
+
+Rozłączony --> Inicjalizacja : Uruchomienie (Socket connect)
+Inicjalizacja --> OczekiwanieNaPrzeciwnika : Otrzymano "Witam [Kolor]"
+
+state OczekiwanieNaPrzeciwnika {
+  OczekiwanieNaPrzeciwnika : statusLabel = "Czekaj..."
+}
+
+OczekiwanieNaPrzeciwnika --> TuraPrzeciwnika : Otrzymano "Status Czekaj"
+OczekiwanieNaPrzeciwnika --> MojaTura : Otrzymano "Status Twoja_Kolej"
+
+state TuraPrzeciwnika {
+  TuraPrzeciwnika : Przyciski zablokowane
+  TuraPrzeciwnika : statusLabel = "Ruch przeciwnika..."
+}
+
+TuraPrzeciwnika --> MojaTura : Otrzymano "Status Twoja_Kolej"
+TuraPrzeciwnika --> KoniecGry : Otrzymano "Ukończono Mecz" / "Poddanie"
+
+state MojaTura {
+  MojaTura : Przyciski odblokowane
+  MojaTura : statusLabel = "Twoja Kolej"
+
+  state "Walidacja Ruchu" as Walidacja {
+  }
+}
+
+MojaTura --> Walidacja : Kliknięcie / Pass / FF
+Walidacja --> TuraPrzeciwnika : Otrzymano "Sukces"
+Walidacja --> MojaTura : Otrzymano "Błąd [komunikat]"
+Walidacja --> KoniecGry : Otrzymano "Poddanie" (FF)
+
+state KoniecGry {
+  KoniecGry : Wyświetlenie Alert/Wyników
+  KoniecGry : System.exit()
+}
+
+KoniecGry --> [*]
+@enduml

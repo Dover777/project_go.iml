@@ -7,7 +7,7 @@
 
     import static org.junit.jupiter.api.Assertions.*;
 
-    public class BoardTest {
+    class BoardTest {
         private Board board;
 
         @BeforeEach
@@ -16,7 +16,7 @@
         }
 
         @Test
-        void PlacingTest() {
+        void placingTest() {
             Board board = new Board();
             board.setStone(1, 1, StoneColour.BLACK);
             board.setStone(2, 2, StoneColour.WHITE);

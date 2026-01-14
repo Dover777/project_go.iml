@@ -2,7 +2,11 @@ package project.go.game;
 
 import java.util.*;
 
+/**
+ * Klasa Board przechowująca stan planszy oraz sposoby zarządzania kamieniami. Posiada konwersję planszy na format tekstowy.
+ */
 public class Board {
+    /** Rozmiar planszy */
     public static final int SIZE = 9;
     private final StoneColour[][] grid;
 
@@ -56,6 +60,7 @@ public class Board {
         return neighbours;
     }
 
+    /** Konwersja planszy na jeden string w celu łatwiejszego 'przenoszenia' jej.*/
     public String toCompactString() {
         StringBuilder sb = new StringBuilder();
         for (int x = 0; x < SIZE; x++) {
@@ -69,6 +74,7 @@ public class Board {
         return sb.toString();
     }
 
+    /**Metoda służąca wypisania w konsoli planszy */
     public String toDebugString() {
         StringBuilder sb = new StringBuilder();
         sb.append("   ");
