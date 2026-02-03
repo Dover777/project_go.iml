@@ -17,7 +17,6 @@ public class GoBot extends Application {
 
     private PrintWriter out;
     private BufferedReader in;
-    private StoneColour myColour;
 
     private int attempts = 0;
 
@@ -37,7 +36,7 @@ public class GoBot extends Application {
             if (welcome != null && welcome.startsWith("Witam")) {
                 String[] parts = welcome.split(" ");
 
-                myColour = StoneColour.valueOf(parts[1]);
+                StoneColour myColour = StoneColour.valueOf(parts[1]);
                 System.out.println("GoBot uruchomiony jako " + myColour);
 
                 botBoard.fromCompactString(parts[3]);
