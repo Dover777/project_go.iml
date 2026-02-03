@@ -109,7 +109,8 @@ public class FXGoClient extends Application {
     private void sendMove(String move) {
         if (move.equals("pass") || move.equals("ff")) {
             out.println(move);
-        } else {
+        }
+        else {
             out.println("Ruch " + move);
         }
     }
@@ -134,7 +135,8 @@ public class FXGoClient extends Application {
 
                 listenToServer();
             }
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             Platform.runLater(() -> statusLabel.setText("Błąd serwera"));
         }
     }
@@ -151,17 +153,21 @@ public class FXGoClient extends Application {
         if (response.startsWith("Sukces")) {
             String[] parts = response.split(" ");
             updateVisualBoard(parts[2]);
-        } else if (response.startsWith("Status Twoja_Kolej")) {
+        }
+        else if (response.startsWith("Status Twoja_Kolej")) {
             myTurn = true;
             statusLabel.setText("Twoja Kolej");
             passButton.setDisable(false);
-        } else if (response.startsWith("Status Czekaj")) {
+        }
+        else if (response.startsWith("Status Czekaj")) {
             myTurn = false;
             statusLabel.setText("Ruch przeciwnika...");
             passButton.setDisable(true);
-        } else if (response.startsWith("Błąd")) {
+        }
+        else if (response.startsWith("Błąd")) {
             showInfoAlert(response.substring(5));
-        } else if (response.startsWith("Ukończono Mecz") || response.startsWith("Poddanie")) {
+        }
+        else if (response.startsWith("Ukończono Mecz") || response.startsWith("Poddanie")) {
             statusLabel.setText("KONIEC GRY");
             showEndGameDialog(response);
         }

@@ -13,6 +13,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javafx.version>17.0.2</javafx.version>
+        <active.mainClass>project.go.connection.FXGoClient</active.mainClass>
     </properties>
 
     <dependencies>
@@ -50,7 +51,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>project.go.connection.FXGoClient</mainClass>
+                    <mainClass>${active.mainClass}</mainClass>
                 </configuration>
             </plugin>
 
@@ -64,4 +65,23 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>client</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <active.mainClass>project.go.connection.FXGoClient</active.mainClass>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>bot</id>
+            <properties>
+                <active.mainClass>project.go.connection.GoBot</active.mainClass>
+            </properties>
+        </profile>
+    </profiles>
 </project>
