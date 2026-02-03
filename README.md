@@ -2,8 +2,12 @@
 
 ## Komendy do włączenia programu:
 ### Kompilacja w Maven dla graficznej opcji:
-mvn clean compile
-mvn exec:java "-Dexec.mainClass=project.go.connection.GoServer"
-### Włączenie servera oraz klienta:
+```bash 
+mvn clean compile exec:java "-Dexec.mainClass=project.go.connection.GoServer"
+```
+### Włączenie jednego klienta oraz bota (opcjonalnie):
+``` bash
 mvn javafx:run
+mvn exec:java:run -Pbot
+```
 ## Diagramy UML zostały wykonane w PlantUML
